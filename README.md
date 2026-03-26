@@ -293,11 +293,6 @@ CMD ["python", "api/app.py"]
 | Member B | Model training, ensemble methods, SHAP analysis |
 | Member C | Docker deployment, Flask API, MLflow tracking, report |
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
