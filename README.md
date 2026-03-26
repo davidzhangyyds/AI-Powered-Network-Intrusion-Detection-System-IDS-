@@ -5,7 +5,7 @@
 ![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-REST%20API-black?logo=flask&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
+
 
 > End-to-end machine learning pipeline for real-time network intrusion detection — from raw data exploration to containerized REST API deployment, with full experiment tracking.
 
