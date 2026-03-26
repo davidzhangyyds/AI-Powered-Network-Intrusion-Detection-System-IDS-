@@ -296,4 +296,6 @@ CMD ["python", "api/app.py"]
 
 ---
 
-*MOD10 — Machine Learning · Winter 2026 · Instructor: Mohammed A. Shehab*
+© 2026 David Zhang. All rights reserved.  
+This code is for academic purposes only and may not be redistributed.
+
