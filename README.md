@@ -15,7 +15,6 @@
 
 This project builds a binary classification system that detects malicious network sessions from behavioral features such as login attempts, packet size, session duration, and IP reputation. The pipeline covers the complete ML lifecycle: data preprocessing, model training, interpretability analysis, REST API deployment via Docker, and experiment tracking with MLflow.
 
-**Course:** MOD10 — Machine Learning, Winter 2026  
 **Dataset:** 9,537 labeled network sessions (55% normal / 45% attack)
 
 ---
