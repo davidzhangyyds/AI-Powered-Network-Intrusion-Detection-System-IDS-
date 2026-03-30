@@ -1,4 +1,8 @@
 idsml/
-.env/
 __pycache__/
 *.pyc
+*.pkl
+mlruns/
+outputs/
+.env
+.DS_Store
