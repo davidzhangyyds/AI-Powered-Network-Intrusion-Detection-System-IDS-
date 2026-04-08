@@ -282,16 +282,6 @@ CMD ["python", "api/app.py"]
 | MLflow | Experiment tracking |
 | matplotlib / seaborn | Visualizations |
 
----
-
-## 👥 Team
-
-| Name | Responsibilities |
-|---|---|
-| Member A | EDA, data preprocessing, evaluation metrics |
-| Member B | Model training, ensemble methods, SHAP analysis |
-| Member C | Docker deployment, Flask API, MLflow tracking, report |
-
 
 ---
 
