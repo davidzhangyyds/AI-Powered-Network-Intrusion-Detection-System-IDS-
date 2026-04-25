@@ -6,3 +6,4 @@ mlruns/
 outputs/
 .env
 .DS_Store
+mlflow.db
