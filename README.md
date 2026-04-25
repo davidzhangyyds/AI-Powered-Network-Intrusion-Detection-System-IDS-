@@ -284,17 +284,6 @@ CMD ["python", "api/app.py"]
 
 ---
 
-## 👥 Team
-
-| Name | Responsibilities |
-|---|---|
-| Member A | EDA, data preprocessing, evaluation metrics |
-| Member B | Model training, ensemble methods, SHAP analysis |
-| Member C | Docker deployment, Flask API, MLflow tracking, report |
-
-
----
-
 © 2026 David Zhang. All rights reserved.  
 This code is for academic purposes only and may not be redistributed.
 
