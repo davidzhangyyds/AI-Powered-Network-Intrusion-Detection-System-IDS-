@@ -45,7 +45,8 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def encode(df: pd.DataFrame) -> pd.DataFrame:
-    """One-hot encoding des colonnes catégorielles."""
+    """One-hot encoding des colonnes catégorielles. 
+    Transforme les features en format numérique."""
     df = pd.get_dummies(df, columns=CAT_COLS)
     print(f"[encode] {df.shape[1]} colonnes après encodage.")
     return df
@@ -57,6 +58,8 @@ def split_features_target(df: pd.DataFrame):
     y = df["attack_detected"]
     print(f"[split] Features : {X.shape[1]} colonnes | Cible : {y.value_counts().to_dict()}")
     return X, y
+
+
 
 
 def normalize(X_train: pd.DataFrame, X_test: pd.DataFrame, save_path: str = "models/scaler.pkl"):
@@ -75,6 +78,21 @@ def normalize(X_train: pd.DataFrame, X_test: pd.DataFrame, save_path: str = "mod
     return X_train, X_test, scaler
 
 
+
+
+
+def add_features(df):
+    # Un score de risque : mauvaise réputation + beaucoup d'échecs
+    df['risk_index'] = (1 - df['ip_reputation_score']) * df['failed_logins']
+    
+    # Tentatives suspectes par seconde (si session_duration n'est pas nulle)
+    df['login_speed'] = df['login_attempts'] / (df['session_duration'] + 0.1)
+    
+    return df
+
+
+
+
 def run_pipeline(filepath: str, test_size: float = 0.2, random_state: int = 42):
     """
     Pipeline complet : charge → nettoie → encode → split → normalise.
@@ -82,7 +100,9 @@ def run_pipeline(filepath: str, test_size: float = 0.2, random_state: int = 42):
     """
     df = load_data(filepath)
     df = clean(df)
+    df = add_features(df)
     df = encode(df)
+    print(df)
     X, y = split_features_target(df)
 
     X_train, X_test, y_train, y_test = train_test_split(
