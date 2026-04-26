@@ -19,7 +19,7 @@ from sklearn.metrics import (
     precision_recall_curve,
     precision_score,
     recall_score,
-    f1_score,
+    f1_score,         
 )
 
 from preprocessing import run_pipeline
@@ -40,30 +40,26 @@ def load_model(path: str = MODEL_PATH):
 
 # ── Métriques textuelles ─────────────────────────────────────────────────────
 
-def find_optimal_threshold(y_true, y_proba, metric='f2', min_recall=0.80):
-    """Find optimal threshold that achieves min_recall while maximizing precision.
-    
-    Strategy:
-    1. Filter thresholds that achieve at least min_recall (80%)
-    2. From those, pick the one with highest precision (lowest FP)
-    3. Fallback to F2-score if no threshold meets min_recall
-    """
+def find_optimal_threshold(y_true, y_proba, min_recall=0.80):
     import numpy as np
     precisions, recalls, thresholds = precision_recall_curve(y_true, y_proba)
     
-    # Find thresholds that achieve at least min_recall
-    valid_recall_idx = np.where(recalls[:-1] >= min_recall)[0]
+    # On s'assure de ne pas prendre le dernier élément (qui n'a pas de seuil associé)
+    precisions = precisions[:-1]
+    recalls = recalls[:-1]
     
-    if len(valid_recall_idx) > 0:
-        # From thresholds with recall >= 80%, pick one with highest precision
-        best_idx = valid_recall_idx[np.argmax(precisions[:-1][valid_recall_idx])]
-        optimal_threshold = thresholds[best_idx]
+    # Masque pour les seuils respectant le rappel minimum
+    valid_recall_mask = recalls >= min_recall
+    
+    if np.any(valid_recall_mask):
+        # On filtre et on prend l'indice du max de précision parmi ceux valides
+        best_idx = np.argmax(precisions[valid_recall_mask])
+        # Attention : l'index 'best_idx' est relatif au masque, il faut retrouver l'index réel
+        optimal_threshold = thresholds[valid_recall_mask][best_idx]
     else:
-        # Fallback: use F2-score if recall target can't be met
-        # F2 weights recall 2x higher than precision
-        f2_scores = 5 * (precisions[:-1] * recalls[:-1]) / (4 * precisions[:-1] + recalls[:-1] + 1e-10)
-        idx = np.argmax(f2_scores)
-        optimal_threshold = thresholds[idx]
+        # Fallback F2 plus robuste
+        f2_scores = (5 * precisions * recalls) / (4 * precisions + recalls + 1e-10)
+        optimal_threshold = thresholds[np.argmax(f2_scores)]
     
     return optimal_threshold
 
@@ -74,7 +70,7 @@ def print_report(model, X_test, y_test, threshold=None):
     
     # Find optimal threshold if not provided
     if threshold is None:
-        threshold = find_optimal_threshold(y_test, y_proba, metric='f1')
+        threshold = find_optimal_threshold(y_test, y_proba)
     
     # Apply threshold
     y_pred = (y_proba >= threshold).astype(int)

@@ -48,12 +48,12 @@ def plot_shap_summary(model, X_test: pd.DataFrame, n_samples: int = 200,
     if isinstance(model, VotingClassifier):
         print("  [explain] VotingClassifier détecté → utilisation de Permutation Importance (rapide)...")
         
-        # Use dummy target for permutation importance
-        dummy_target = np.zeros(len(X_sample))
+        
+        y_sample = y_test.iloc[:n_samples] # Utilise les vrais labels
         
         # Calculate permutation importance
         result = permutation_importance(
-            model, X_sample, dummy_target,
+            model, X_sample, y_sample,
             n_repeats=10, random_state=42, n_jobs=-1
         )
         
@@ -121,23 +121,56 @@ def plot_shap_summary(model, X_test: pd.DataFrame, n_samples: int = 200,
 def plot_shap_waterfall(model, X_test: pd.DataFrame, sample_idx: int = 0,
                         save_path: str = f"{OUTPUT_DIR}shap_waterfall.png"):
     """
-    Explique une prédiction individuelle avec visualisation simple.
-    Pour VotingClassifier: utilise un graphique de features importantes.
+    Explique une prédiction individuelle avec waterfall plot.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    sample = X_test.iloc[[sample_idx]]
     
-    # Pour VotingClassifier, crée une visualisation simple des contributions
-    if isinstance(model, VotingClassifier):
-        # Get prediction for this sample
+    # On prend un petit échantillon pour servir de référence (background)
+    background = X_test.iloc[:50] 
+    sample = X_test.iloc[[sample_idx]]
+
+    try:
+        # Utiliser KernelExplainer (fonctionne avec n'importe quel .predict_proba)
+        explainer = shap.KernelExplainer(lambda x: model.predict_proba(x)[:, 1], background)
+        
+        # Calcul des shap_values pour l'échantillon
+        shap_values = explainer.shap_values(sample)
+        base_val = explainer.expected_value
+        
+        # Extract single sample explanation
+        if isinstance(shap_values, np.ndarray) and shap_values.ndim == 2:
+            # Shape is (n_samples, n_features), take first sample
+            sv = shap_values[0]
+        elif isinstance(shap_values, list):
+            # Multiple outputs - take first sample of second output (attack class)
+            sv = shap_values[1][0] if len(shap_values) > 1 else shap_values[0][0]
+        else:
+            sv = shap_values[0]
+        
+        # Création de l'objet Explanation requis par shap.plots.waterfall
+        exp = shap.Explanation(
+            values=sv,
+            base_values=base_val,
+            data=sample.iloc[0].values,
+            feature_names=sample.columns
+        )
+
+        plt.figure(figsize=(10, 6))
+        shap.plots.waterfall(exp, show=False)
+        plt.title(f"SHAP - Explication session #{sample_idx}")
+        plt.tight_layout()
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        plt.close()
+        print(f"[explain] Waterfall plot sauvegardé → {save_path}")
+        
+    except Exception as e:
+        print(f"[explain] Waterfall plot failed: {e}")
+        # Fallback: simple feature value plot
+        plt.figure(figsize=(10, 6))
+        
         pred_proba = model.predict_proba(sample)[0]
         attack_prob = pred_proba[1]
         
-        # Get coefficients or importance from underlying estimators
-        plt.figure(figsize=(10, 6))
-        
-        # Show feature values for this sample
         feature_vals = sample.iloc[0].values
         feature_names = sample.columns
         
@@ -147,40 +180,13 @@ def plot_shap_waterfall(model, X_test: pd.DataFrame, sample_idx: int = 0,
         plt.barh(range(len(sorted_idx)), feature_vals[sorted_idx], color=colors)
         plt.yticks(range(len(sorted_idx)), feature_names[sorted_idx])
         plt.xlabel('Feature Value')
-        plt.title(f'Feature Values for Session #{sample_idx} (Predicted: {attack_prob:.2%} attack)')
+        plt.title(f'Feature Values for Session #{sample_idx} (Attack Probability: {attack_prob:.2%})')
         plt.axvline(feature_vals.mean(), color='green', linestyle='--', label='Mean')
         plt.legend()
         plt.tight_layout()
         plt.savefig(save_path, dpi=150, bbox_inches="tight")
         plt.close()
-        print(f"[explain] Feature visualization sauvegardé → {save_path}")
-    else:
-        # Use SHAP waterfall for tree-based models
-        try:
-            explainer = shap.TreeExplainer(model)
-            shap_exp = explainer(sample)
-        except Exception as e:
-            print(f"  [explain] TreeExplainer failed: {e}")
-            return
-        
-        # Extract for attack class (class 1)
-        if isinstance(shap_exp, list):
-            shap_vals = shap_exp[1] if len(shap_exp) > 1 else shap_exp[0]
-        elif hasattr(shap_exp, 'values'):
-            if shap_exp.values.ndim == 3:
-                shap_vals = shap_exp[:, :, 1]
-            else:
-                shap_vals = shap_exp.values
-        else:
-            shap_vals = shap_exp
-
-        plt.figure(figsize=(10, 6))
-        shap.plots.waterfall(shap_vals[0], show=False)
-        plt.title(f"SHAP - Explication session #{sample_idx}")
-        plt.tight_layout()
-        plt.savefig(save_path, dpi=150, bbox_inches="tight")
-        plt.close()
-        print(f"[explain] SHAP Waterfall plot sauvegardé → {save_path}")
+        print(f"[explain] Fallback feature plot sauvegardé → {save_path}")
 
 
 # ── Point d'entrée ───────────────────────────────────────────────────────────
