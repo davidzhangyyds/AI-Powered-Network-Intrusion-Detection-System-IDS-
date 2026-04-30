@@ -1,0 +1,71 @@
+# =============================================================================
+# docker-compose.yml — canonical entry point.
+# =============================================================================
+#
+# Run the project (first time builds the image, every other time it reuses it):
+#
+#     docker compose up -d
+#
+# Then open http://localhost:7860
+#
+# >>> If you change anything in src/ or requirements-docker.txt you MUST add
+# >>> --build, otherwise docker reuses the cached image:
+#
+#     docker compose up -d --build
+#
+# Useful follow-up commands:
+#     docker compose ps                # status (incl. healthcheck)
+#     docker compose logs -f gradio    # tail logs
+#     docker compose down              # stop + remove the container
+# =============================================================================
+
+# Stable project name — `docker compose ls` shows the same name no matter
+# which directory the command is run from.
+name: intrusion-detection
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Gradio frontend serving the trained intrusion-detection model.
+  # ---------------------------------------------------------------------------
+  gradio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: intrusion-detection-gradio:latest
+    container_name: intrusion-detection-gradio
+
+    # Build the local image instead of trying to pull it from a registry.
+    # Without this, `docker compose up -d` may emit a confusing "manifest not
+    # found" warning when the image only exists locally.
+    pull_policy: build
+
+    ports:
+      - "7860:7860"
+
+    environment:
+      PORT: "7860"
+      GRADIO_SERVER_NAME: "0.0.0.0"
+      GRADIO_ANALYTICS_ENABLED: "False"
+      # Avoid matplotlib trying to write its font cache into a non-existent
+      # home directory on a slim Linux image.
+      MPLCONFIGDIR: "/tmp/matplotlib"
+
+    # Survive Docker daemon / host restarts when running detached.
+    restart: unless-stopped
+
+    # Visible via `docker compose ps` so you immediately know whether the
+    # service is healthy without opening a browser.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:7860/config', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    # Cap log file size (otherwise long detached runs can fill the disk).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

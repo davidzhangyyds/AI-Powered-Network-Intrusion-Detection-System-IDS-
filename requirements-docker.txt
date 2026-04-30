@@ -1,0 +1,22 @@
+# ----------------------------------------------------------------------------
+# Runtime-only requirements for the Gradio container image.
+#
+# Versions are pinned so the container always uses the same code paths as the
+# dev environment.
+#
+# About the huggingface_hub pin:
+#   gradio 5.6.0 still imports `HfFolder` from huggingface_hub via its OAuth
+#   helper. huggingface_hub 0.27+ removed `HfFolder`, which makes gradio fail
+#   at import time with:
+#       ImportError: cannot import name 'HfFolder' from 'huggingface_hub'
+#   Pinning huggingface_hub to 0.25.2 keeps the symbol available.
+# ----------------------------------------------------------------------------
+
+gradio==5.6.0
+huggingface_hub==0.25.2
+
+scikit-learn==1.8.0
+pandas==2.3.3
+numpy==2.4.3
+joblib==1.5.3
+matplotlib==3.10.8
