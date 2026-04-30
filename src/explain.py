@@ -71,7 +71,7 @@ def plot_shap_summary(model, X_test: pd.DataFrame, n_samples: int = 200,
         plt.barh(range(top_n), top_features['importance'])
         plt.yticks(range(top_n), top_features['feature'])
         plt.xlabel('Permutation Importance')
-        plt.title('Permutation Importance - Features pour la classe Attaque')
+        plt.title('Permutation Importance - Features of the attack class')
         plt.gca().invert_yaxis()
         plt.tight_layout()
         plt.savefig(save_path, dpi=150, bbox_inches="tight")

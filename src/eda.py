@@ -62,7 +62,7 @@ def plot_heatmap(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm",
                 linewidths=0.5, ax=ax, vmin=-1, vmax=1)
-    ax.set_title("Corrélation entre les features numériques")
+    ax.set_title("Correlation between numerical features")
     plt.tight_layout()
     path = f"{OUTPUT_DIR}eda_heatmap.png"
     plt.savefig(path, dpi=150, bbox_inches="tight")
@@ -109,7 +109,7 @@ def plot_categorical(df: pd.DataFrame):
         ct.columns = ["Normal", "Attaque"]
         ct.plot(kind="bar", ax=ax, color=["steelblue", "tomato"],
                 width=0.6, rot=0)
-        ax.set_title(f"Attaques par {col.replace('_', ' ')}")
+        ax.set_title(f"Attacks by {col.replace('_', ' ')}")
         ax.set_xlabel("")
         ax.legend(loc="upper right", fontsize=8)
 

@@ -122,7 +122,7 @@ def plot_confusion_matrix(model, X_test, y_test, threshold, save_path: str = f"{
         cmap="Blues",
         ax=ax,
     )
-    ax.set_title(f"Matrice de confusion (Threshold={threshold:.3f})")
+    ax.set_title(f"Confusion Matrix (Threshold={threshold:.3f})")
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
     plt.close()
