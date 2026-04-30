@@ -147,7 +147,7 @@ intrusion-detection/
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/intrusion-detection.git
+git clone https://github.com/davidzhangyyds/intrusion-detection.git
 cd intrusion-detection
 
 # Create and activate virtual environment
@@ -168,15 +168,16 @@ python src/train.py
 ### Launch MLflow UI
 
 ```bash
-mlflow ui
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 # Open http://localhost:5000 in your browser
 ```
 
 ### Build and run with Docker
 
+With Docker Compose:
+
 ```bash
-docker build -t intrusion-detection-api .
-docker run -p 5000:5000 intrusion-detection-api
+docker compose up --build
 ```
 
 ### Test the API
