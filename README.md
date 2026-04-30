@@ -177,7 +177,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 With Docker Compose:
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 
 ### Test the API
