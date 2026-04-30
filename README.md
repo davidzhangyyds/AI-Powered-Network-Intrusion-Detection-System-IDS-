@@ -310,6 +310,60 @@ CMD ["python", "src/ui_frontend.py"]
 
 ---
 
+## 🎨 Gradio Interactive Frontend
+
+A full-featured web interface for real-time intrusion detection scoring, batch processing, model comparison, and explainability analysis.
+
+### Features
+
+**Tab 1: Live Prediction**
+- Single-session scoring through an interactive form
+- Real-time risk assessment with adjustable decision threshold
+- Live probability outputs showing confidence in both classes
+- Preset examples for quick exploration
+
+**Tab 2: Batch Prediction**
+- Upload CSV files to score multiple sessions at once
+- Customizable decision threshold per batch
+- Download results with predictions and probability scores
+- Summary statistics (attack rate, confidence distribution)
+
+**Tab 3: Model Comparison**
+- Side-by-side metrics for all trained models (pulled from MLflow)
+- Shows Accuracy, Recall, Precision, F1-score, and AUC
+- Visual breakdown chart comparing model performance
+- Highlights the currently deployed model
+
+**Tab 4: EDA & Explainability**
+- **Exploratory Data Analysis** — distribution plots, correlation heatmap, boxplots, class balance visualization
+- **Model Evaluation** — ROC curves, confusion matrices, precision-recall curves
+- **SHAP Analysis** — global feature importance summary and per-prediction explanations
+
+**Tab 5: About**
+- Project overview and methodology
+- Feature reference table with descriptions
+- Engineered features explanation
+- Current model metrics and performance summary
+
+### Running the Gradio UI
+
+In Docker:
+```bash
+docker compose up --build
+# Gradio frontend runs on http://localhost:7860
+# Flask API simultaneously runs on http://localhost:5000
+```
+
+### Interface Highlights
+
+- **Soft theme** with blue/indigo color scheme for security context
+- **Live metric display** — current model name, AUC, Recall, and F1-score at the top
+- **Responsive layout** — works on desktop, tablet, and mobile devices
+- **API export** — automatic REST API generated for all prediction functions
+- **Accessibility** — full keyboard navigation and screen reader support
+
+---
+
 ## 📈 Results
 
 > Results will be updated after full model training.
