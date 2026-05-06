@@ -52,6 +52,8 @@ def build_models():
 # Force le modèle à punir plus sévèrement les erreurs sur les attaques (classe 1)
 model_lr = LogisticRegression(max_iter=1000, class_weight={0: 1, 1: 2})
 dt = DecisionTreeClassifier(max_depth=10, class_weight={0: 1, 1: 2}, random_state=42)
+
+
 # ── Évaluation ───────────────────────────────────────────────────────────────
 
 def find_optimal_threshold(y_true, y_proba, metric='f2', min_recall=0.80):

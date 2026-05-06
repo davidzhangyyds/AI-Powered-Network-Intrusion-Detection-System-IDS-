@@ -44,6 +44,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+#One hot encoding for categorical columns. Transform features into numeric format.
 def encode(df: pd.DataFrame) -> pd.DataFrame:
     """One-hot encoding des colonnes catégorielles. 
     Transforme les features en format numérique."""
@@ -80,7 +81,7 @@ def normalize(X_train: pd.DataFrame, X_test: pd.DataFrame, save_path: str = "mod
 
 
 
-
+#Features engineering 
 def add_features(df):
     # Un score de risque : mauvaise réputation + beaucoup d'échecs
     df['risk_index'] = (1 - df['ip_reputation_score']) * df['failed_logins']
